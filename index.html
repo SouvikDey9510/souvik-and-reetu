@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Souvik & Reetu | The Wedding</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP & ScrollTrigger for optimized animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lenis for hardware-accelerated smooth scrolling -->
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <!-- FontAwesome for elegant icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'serif'],
+                    },
+                    colors: {
+                        'pure-black': '#000000',
+                        'space-gray': '#1d1d1f',
+                        'silver': '#f5f5f7',
+                        'subtle-gold': '#d4af37',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Lenis Smooth Scrolling Base */
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        /* Base Resets & Hardware Acceleration */
+        body {
+            background-color: #000000;
+            color: #f5f5f7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Hardware Acceleration Utility */
+        .hw-accel {
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(25, 25, 25, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Dynamic Background fixed behind content */
+        .ambient-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
+            overflow: hidden;
+        }
+        
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            will-change: transform;
+        }
+        .orb-1 { width: 40vw; height: 40vw; background: #2a2a2a; top: -10%; left: -10%; }
+        .orb-2 { width: 30vw; height: 30vw; background: #1f1f1f; bottom: -10%; right: -10%; }
+        .orb-3 { width: 20vw; height: 20vw; background: rgba(212, 175, 55, 0.15); top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Typography Refinements */
+        .text-balance {
+            text-wrap: balance;
+        }
+        
+        /* Reveal Mask */
+        .reveal-mask {
+            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+            will-change: clip-path, transform;
+        }
+    </style>
+</head>
+<body class="font-sans font-light">
+
+    <!-- Ambient Fixed Background -->
+    <div class="ambient-canvas hw-accel" id="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <header class="relative w-full h-screen flex flex-col items-center justify-center z-10" id="hero">
+        <div class="text-center px-4 w-full max-w-6xl mx-auto flex flex-col items-center hw-accel">
+            
+            <p class="hero-intro font-sans text-silver/60 tracking-[0.5em] uppercase text-xs md:text-sm mb-6 opacity-0 translate-y-4">
+                We invite you to celebrate
+            </p>
+            
+            <div class="overflow-hidden pb-4">
+                <h1 class="hero-title font-serif text-6xl md:text-8xl lg:text-[9rem] leading-none text-white font-light text-balance reveal-mask">
+                    Souvik <span class="text-silver/40 font-extralight italic">&</span> Reetu
+                </h1>
+            </div>
+            
+            <div class="overflow-hidden mt-6">
+                <p class="hero-date font-sans text-sm md:text-base text-silver/80 tracking-[0.3em] uppercase reveal-mask">
+                    December 2026 &middot; West Bengal
+                </p>
+            </div>
+        </div>
+
+        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 hero-scroll text-silver/40">
+            <span class="text-[0.65rem] tracking-[0.4em] uppercase mb-4">Scroll</span>
+            <div class="w-[1px] h-16 bg-gradient-to-b from-silver/50 to-transparent"></div>
+        </div>
+    </header>
+
+    <section class="py-24 md:py-40 w-full relative z-10" id="countdown">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-2xl md:text-3xl font-serif text-white/80 mb-16 fade-up font-light tracking-wide">Time Until Forever</h2>
+            
+            <div class="glass-panel rounded-full py-8 px-6 md:px-16 mx-auto max-w-fit fade-up flex space-x-8 md:space-x-16 items-center justify-center hw-accel">
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="cd-days" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
+                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Days</span>
+                </div>
+                <div class="w-[1px] h-12 bg-white/10"></div>
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="cd-hours" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
+                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Hours</span>
+                </div>
+                <div class="w-[1px] h-12 bg-white/10"></div>
+                <div class="flex flex-col items-center w-16 md:w-24">
+                    <span id="cd-minutes" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
+                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Mins</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 md:py-32 w-full relative z-10" id="events">
+        <div class="max-w-6xl mx-auto px-4 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                
+                <!-- Event 1: Marriage -->
+                <div class="glass-panel rounded-3xl p-8 md:p-12 fade-up-stagger hw-accel group hover:bg-white/[0.08] transition-colors duration-700">
+                    <div class="flex items-center justify-between mb-12">
+                        <span class="text-xs tracking-[0.3em] uppercase text-subtle-gold">Event I</span>
+                        <i class="fa-solid fa-rings-wedding text-2xl text-white/40 group-hover:text-subtle-gold transition-colors duration-500"></i>
+                    </div>
+                    
+                    <h3 class="text-4xl md:text-6xl font-serif font-light text-white mb-4">The Marriage</h3>
+                    <p class="text-xl font-serif text-silver/80 italic mb-8">Sunday, 13th December</p>
+                    
+                    <div class="w-full h-[1px] bg-white/10 mb-8"></div>
+                    
+                    <div class="space-y-4 text-sm font-sans text-silver/60 font-light leading-relaxed">
+                        <p class="flex items-start">
+                            <i class="fa-regular fa-clock mt-1 mr-4 w-4"></i>
+                            <span>Evening Ceremony</span>
+                        </p>
+                        <p class="flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 mr-4 w-4"></i>
+                            <span>Krishna Kunja, Canning- Herobhanga Rd,<br>Dighirpar, Canning, West Bengal 743329</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Event 2: Reception -->
+                <div class="glass-panel rounded-3xl p-8 md:p-12 fade-up-stagger hw-accel group hover:bg-white/[0.08] transition-colors duration-700 md:mt-24">
+                    <div class="flex items-center justify-between mb-12">
+                        <span class="text-xs tracking-[0.3em] uppercase text-subtle-gold">Event II</span>
+                        <i class="fa-solid fa-glass-cheers text-2xl text-white/40 group-hover:text-subtle-gold transition-colors duration-500"></i>
+                    </div>
+                    
+                    <h3 class="text-4xl md:text-6xl font-serif font-light text-white mb-4">The Reception</h3>
+                    <p class="text-xl font-serif text-silver/80 italic mb-8">Tuesday, 15th December</p>
+                    
+                    <div class="w-full h-[1px] bg-white/10 mb-8"></div>
+                    
+                    <div class="space-y-4 text-sm font-sans text-silver/60 font-light leading-relaxed">
+                        <p class="flex items-start">
+                            <i class="fa-regular fa-clock mt-1 mr-4 w-4"></i>
+                            <span>Dinner & Celebration</span>
+                        </p>
+                        <p class="flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 mr-4 w-4"></i>
+                            <span>Krishna Kunja, Canning- Herobhanga Rd,<br>Dighirpar, Canning, West Bengal 743329</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="w-full h-screen relative z-10 overflow-hidden flex items-center justify-center my-32">
+        <div class="absolute inset-0 w-full h-[120%] -top-[10%] hw-accel" id="parallax-wrapper">
+            <!-- Extremely high quality, elegant placeholder -->
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop" 
+                 alt="Elegance" 
+                 class="w-full h-full object-cover opacity-40">
+        </div>
+        <div class="relative z-10 text-center px-4 mix-blend-difference">
+            <h2 class="font-serif text-5xl md:text-8xl text-white font-light text-balance mb-6">Two hearts,<br>one journey.</h2>
+        </div>
+    </section>
+
+    <footer class="py-24 relative z-10 bg-pure-black border-t border-white/5">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <div class="font-serif text-3xl md:text-4xl text-white font-light mb-8 fade-up">We look forward to celebrating with you.</div>
+            <p class="text-sm font-sans text-silver/40 tracking-[0.2em] uppercase mt-16">
+                &copy; 2026 Souvik & Reetu
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Hardware Accelerated Smooth Scrolling Setup (Lenis)
+        const lenis = new Lenis({
+            duration: 1.5, // Slower, more elegant glide
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-like cubic bezier
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 0.8, // Smooth out fast wheel movements
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        // Sync Lenis with GSAP ScrollTrigger
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0); // Prevents GSAP from skipping frames, ensuring buttery smoothness
+
+        // Enable global force3D for performance
+        gsap.defaults({ force3D: true });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // 2. Hero Initial Reveal Animations
+            const tlHero = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+            tlHero.to('.hero-intro', {
+                opacity: 1,
+                y: 0,
+                duration: 1.5,
+                delay: 0.2
+            })
+            .to('.hero-title.reveal-mask', {
+                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
+                duration: 2,
+            }, "-=1")
+            .to('.hero-date.reveal-mask', {
+                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
+                duration: 1.5,
+            }, "-=1.5")
+            .to('.hero-scroll', {
+                opacity: 1,
+                duration: 1.5
+            }, "-=1");
+
+            // Hero scroll effect (subtle scale and fade out)
+            gsap.to('#hero .hw-accel', {
+                yPercent: 30,
+                opacity: 0,
+                scale: 0.95,
+                scrollTrigger: {
+                    trigger: "#hero",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1.2
+                }
+            });
+
+            // 3. Ambient Background Subtlety on Scroll
+            gsap.to('.orb-1', {
+                yPercent: 50,
+                xPercent: -20,
+                scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 2 }
+            });
+            gsap.to('.orb-2', {
+                yPercent: -50,
+                xPercent: 20,
+                scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 2.5 }
+            });
+
+            // 4. Reveal Animations (Fade Up)
+            gsap.utils.toArray('.fade-up').forEach(elem => {
+                gsap.fromTo(elem, 
+                    { opacity: 0, y: 40 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.2,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: elem,
+                            start: "top 85%", // Trigger slightly earlier for better UX
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+
+            // Reveal Animations (Staggered Cards)
+            gsap.utils.toArray('.fade-up-stagger').forEach((elem, i) => {
+                gsap.fromTo(elem, 
+                    { opacity: 0, y: 60 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.5,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: elem,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+
+            // 5. High-Performance Parallax Image
+            gsap.to('#parallax-wrapper', {
+                yPercent: 20, // Moves the container down slightly while scrolling past
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#parallax-wrapper",
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: true
+                }
+            });
+
+            // 6. Countdown Logic
+            const targetDate = new Date("Dec 13, 2026 00:00:00").getTime();
+            
+            // Cache DOM elements
+            const elDays = document.getElementById("cd-days");
+            const elHours = document.getElementById("cd-hours");
+            const elMinutes = document.getElementById("cd-minutes");
+
+            function updateCountdown() {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                if (distance < 0) {
+                    elDays.innerText = "00";
+                    elHours.innerText = "00";
+                    elMinutes.innerText = "00";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+                elDays.innerText = days.toString().padStart(2, '0');
+                elHours.innerText = hours.toString().padStart(2, '0');
+                elMinutes.innerText = minutes.toString().padStart(2, '0');
+                
+                // Use requestAnimationFrame for updating without interval jitter
+                setTimeout(() => {
+                    requestAnimationFrame(updateCountdown);
+                }, 1000 * 60); // Update every minute to save CPU, since seconds are removed for elegance
+            }
+            
+            // Initial call
+            updateCountdown();
+        });
+    </script>
+</body>
+</html>

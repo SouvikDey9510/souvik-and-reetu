@@ -218,6 +218,15 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 0;
         }
+
+        /* Mobile Performance Optimizations */
+        @media (max-width: 768px) {
+            .blob { filter: blur(50px); opacity: 0.5; }
+            .glass-panel { backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+            .glass-pill { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+            /* Pause extremely heavy background repaints on mobile */
+            .mesh-background { animation: none; } 
+        }
     </style>
 </head>
 
@@ -279,25 +288,25 @@
 
                     <h2 class="font-serif text-4xl md:text-6xl text-dark-plum mb-16 relative z-10">The Countdown Begins</h2>
                     
-                    <div class="flex flex-wrap justify-center gap-8 md:gap-16 items-start relative z-10" id="countdown-container">
-                        <div class="flex flex-col items-center min-w-[90px]">
-                            <span id="days" class="font-serif text-7xl md:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
-                            <span class="font-sans text-sm tracking-[0.3em] uppercase text-dark-plum/70 mt-6 font-medium">Days</span>
+                    <div class="grid grid-cols-4 md:flex md:flex-row md:justify-center md:gap-8 lg:gap-12 items-center w-full relative z-10" id="countdown-container">
+                        <div class="flex flex-col items-center">
+                            <span id="days" class="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
+                            <span class="font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-dark-plum/70 mt-4 md:mt-6 font-medium">Days</span>
                         </div>
-                        <div class="text-5xl md:text-7xl text-dark-plum/40 font-serif mt-2 animate-pulse">:</div>
-                        <div class="flex flex-col items-center min-w-[90px]">
-                            <span id="hours" class="font-serif text-7xl md:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
-                            <span class="font-sans text-sm tracking-[0.3em] uppercase text-dark-plum/70 mt-6 font-medium">Hours</span>
+                        <div class="hidden md:block text-5xl md:text-7xl text-dark-plum/40 font-serif pb-8 animate-pulse">:</div>
+                        <div class="flex flex-col items-center">
+                            <span id="hours" class="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
+                            <span class="font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-dark-plum/70 mt-4 md:mt-6 font-medium">Hours</span>
                         </div>
-                        <div class="text-5xl md:text-7xl text-dark-plum/40 font-serif mt-2 animate-pulse">:</div>
-                        <div class="flex flex-col items-center min-w-[90px]">
-                            <span id="minutes" class="font-serif text-7xl md:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
-                            <span class="font-sans text-sm tracking-[0.3em] uppercase text-dark-plum/70 mt-6 font-medium">Mins</span>
+                        <div class="hidden md:block text-5xl md:text-7xl text-dark-plum/40 font-serif pb-8 animate-pulse">:</div>
+                        <div class="flex flex-col items-center">
+                            <span id="minutes" class="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
+                            <span class="font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-dark-plum/70 mt-4 md:mt-6 font-medium">Mins</span>
                         </div>
-                        <div class="text-5xl md:text-7xl text-dark-plum/40 font-serif mt-2 animate-pulse">:</div>
-                        <div class="flex flex-col items-center min-w-[90px]">
-                            <span id="seconds" class="font-serif text-7xl md:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
-                            <span class="font-sans text-sm tracking-[0.3em] uppercase text-dark-plum/70 mt-6 font-medium">Secs</span>
+                        <div class="hidden md:block text-5xl md:text-7xl text-dark-plum/40 font-serif pb-8 animate-pulse">:</div>
+                        <div class="flex flex-col items-center">
+                            <span id="seconds" class="font-serif text-4xl sm:text-6xl md:text-8xl lg:text-9xl text-dark-plum leading-none tabular-nums drop-shadow-lg">00</span>
+                            <span class="font-sans text-[10px] sm:text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase text-dark-plum/70 mt-4 md:mt-6 font-medium">Secs</span>
                         </div>
                     </div>
                 </div>
@@ -437,6 +446,7 @@
             duration: 1.5, // Even smoother, Apple-style duration
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
             smooth: true,
+            smoothTouch: false, // CRITICAL: Disable virtual scroll on mobile to prevent extreme lag
             touchMultiplier: 2,
         });
 
@@ -590,23 +600,49 @@
         splitToChars('name-1');
         splitToChars('name-2');
 
+        // NEW: Interactive Elastic Glow Hover for Characters
+        if (isDesktop) {
+            document.querySelectorAll('.hero-char').forEach(char => {
+                char.addEventListener('mouseenter', () => {
+                    gsap.to(char, { 
+                        y: -20, 
+                        scale: 1.2, 
+                        color: '#FF9A9E', 
+                        textShadow: '0 10px 20px rgba(255, 154, 158, 0.4)', 
+                        duration: 0.3, 
+                        ease: 'power2.out' 
+                    });
+                });
+                char.addEventListener('mouseleave', () => {
+                    gsap.to(char, { 
+                        y: 0, 
+                        scale: 1, 
+                        color: '', 
+                        textShadow: 'none', 
+                        duration: 1, 
+                        ease: 'elastic.out(1, 0.3)' 
+                    });
+                });
+            });
+        }
+
         window.addEventListener('load', () => {
             gsap.registerPlugin(ScrollTrigger);
 
             const tl = gsap.timeline();
 
-            // Set Initial states for hero characters
-            gsap.set('.hero-char', { y: 150, rotateX: -90, rotateY: 45, opacity: 0, filter: 'blur(20px)' });
+            // Set Initial states for hero characters (Cinematic Glide Setup)
+            gsap.set('.hero-char', { y: 100, scale: 0.9, opacity: 0, filter: 'blur(15px)' });
 
             tl.to('.preloader-text', { y: 0, duration: 1.2, ease: "power4.out" })
               .to('.preloader-text', { y: "-100%", duration: 0.8, ease: "power4.in", delay: 0.8 })
               .to('.preloader', { y: "-100%", duration: 1, ease: "expo.inOut" }, "-=0.4")
               // Animate Hero Elements fading in
               .to('.hero-fade', { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power3.out" }, "-=0.5")
-              // Dynamic 3D Character Reveal
+              // Elegant Cinematic Soft-Focus Reveal
               .to('.hero-char', {
-                  y: 0, rotateX: 0, rotateY: 0, opacity: 1, filter: 'blur(0px)',
-                  duration: 1.5, stagger: 0.04, ease: 'expo.out'
+                  y: 0, scale: 1, opacity: 1, filter: 'blur(0px)',
+                  duration: 2, stagger: 0.08, ease: 'expo.out'
               }, "-=0.8");
 
             // 3D Kinetic Word Fold-Out for Quote
@@ -726,7 +762,8 @@
         }
 
         // Initialize some hearts
-        for(let i=0; i<20; i++) {
+        const maxHearts = isDesktop ? 20 : 6; // Drastically reduce elements on mobile for 60fps
+        for(let i=0; i<maxHearts; i++) {
             let h = new FloatingHeart();
             h.y = Math.random() * height; // Distribute initially
             hearts.push(h);
@@ -755,8 +792,10 @@
                 }
             }
 
-            // Draw & Update Hearts
-            if(Math.random() < 0.05) hearts.push(new FloatingHeart()); // Spawn new hearts randomly
+            // Draw & Update Hearts (Responsive Spawning)
+            if(Math.random() < (isDesktop ? 0.05 : 0.01)) hearts.push(new FloatingHeart()); 
+            if(hearts.length > maxHearts * 1.5) hearts.shift(); // Memory leak protection
+
             for (let i = hearts.length - 1; i >= 0; i--) {
                 hearts[i].update();
                 hearts[i].draw();

@@ -206,7 +206,7 @@
 
         .preloader {
             position: fixed; inset: 0;
-            background: #000;
+            background: #2D1B2E;
             z-index: 9999;
             display: flex; justify-content: center; align-items: center;
         }
@@ -231,15 +231,15 @@
 </head>
 
 <body class="font-sans antialiased">
-<!--
+
     <div class="preloader" id="preloader">
         <div class="overflow-hidden">
-            <h2 class="font-serif text-4xl md:text-6xl text-white translate-y-full preloader-text tracking-widest">ETHEREAL</h2>
+            <h2 class="font-serif text-4xl md:text-6xl text-rose-400 translate-y-full preloader-text tracking-widest"></h2>
         </div>
     </div>
 
     <div id="cursor"></div>
--->
+    
     <div class="mesh-background">
         <div class="blob blob-1"></div>
         <div class="blob blob-2"></div>
@@ -634,8 +634,8 @@
             // Set Initial states for hero characters (Cinematic Glide Setup)
             gsap.set('.hero-char', { y: 100, scale: 0.9, opacity: 0, filter: 'blur(15px)' });
 
-            tl.to('.preloader-text', { y: 0, duration: 1.2, ease: "power4.out" })
-              .to('.preloader-text', { y: "-100%", duration: 0.8, ease: "power4.in", delay: 0.8 })
+            tl.to('.preloader-text', { y: 0, duration: 0.1, ease: "power4.out" })
+              .to('.preloader-text', { y: "-100%", duration: 0.8, ease: "power4.in", delay: 0.1 })
               .to('.preloader', { y: "-100%", duration: 1, ease: "expo.inOut" }, "-=0.4")
               // Animate Hero Elements fading in
               .to('.hero-fade', { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: "power3.out" }, "-=0.5")

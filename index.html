@@ -1,41 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="antialiased">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Souvik & Reetu - Wedding Invitation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Souvik & Reetu | An Ethereal Union</title>
     
-    <!-- Google Fonts -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
+    <!-- Scripts: GSAP + Plugins, Lenis, Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.32/dist/lenis.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        'wedding-burgundy': '#6A1E27',
-                        'wedding-green': '#2C4A3B',
-                        'wedding-gold': '#D4AF37',
-                        'wedding-gold-light': '#ebd07f',
-                        'wedding-bg': '#F9F6F0',
-                    },
                     fontFamily: {
-                        'script': ['"Great Vibes"', 'cursive'],
-                        'serif': ['"Playfair Display"', 'serif'],
-                        'sans': ['"Lora"', 'serif'],
+                        'display': ['"Cinzel"', 'serif'],
+                        'body': ['"Jost"', 'sans-serif'],
+                        'script': ['"Pinyon Script"', 'cursive'],
                     },
-                    backgroundImage: {
-                        'hero-pattern': "linear-gradient(to bottom, rgba(44, 74, 59, 0.8), rgba(106, 30, 39, 0.8)), url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
-                        'floral-pattern': "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23d4af37\\' fill-opacity=\\'0.1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
+                    colors: {
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.1)',
+                            200: 'rgba(255, 255, 255, 0.2)',
+                            300: 'rgba(255, 255, 255, 0.3)',
+                            border: 'rgba(255, 255, 255, 0.4)',
+                        },
+                        accent: {
+                            rose: '#E8C5C5',
+                            gold: '#D4AF37',
+                            sage: '#C1C9B8',
+                        },
+                        text: {
+                            primary: '#1A202C',
+                            secondary: '#4A5568',
+                            light: '#A0AEC0'
+                        }
                     }
                 }
             }
@@ -43,362 +49,541 @@
     </script>
 
     <style>
+        :root { --bg-color: #FAFCFF; }
         body {
-            background-color: #F9F6F0;
+            background-color: var(--bg-color);
+            color: theme('colors.text.primary');
             overflow-x: hidden;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+            /* Enhance hardware acceleration */
+            perspective: 1000px;
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        /* Liquid Canvas */
+        #ambient-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; pointer-events: none;
+            opacity: 0.85; filter: blur(90px);
+            transform: translateZ(0); 
+            will-change: transform;
         }
 
-        /* Particle Canvas */
-        #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+        /* Extreme Glass Utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(31, 38, 135, 0.1);
+        }
+
+        .glass-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.1);
             pointer-events: none;
         }
 
-        /* Scroll Reveal Animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        /* Preloader */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
+        .loader-ring {
+            width: 150px; height: 150px;
+            border: 2px solid transparent;
+            border-top-color: theme('colors.accent.gold');
+            border-radius: 50%;
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 12px; height: 12px;
+            border-radius: 50%; background-color: theme('colors.accent.gold');
+            pointer-events: none; z-index: 100000;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.hover {
+            width: 60px; height: 60px;
+            background-color: white; mix-blend-mode: exclusion;
+        }
+
+        .split-char { display: inline-block; opacity: 0; transform: translateY(100%) rotateX(-90deg); transform-origin: bottom center; }
         
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        /* 3D Container */
+        .tilt-container { transform-style: preserve-3d; }
+        .tilt-element { transform: translateZ(50px); }
+        .tilt-element-deep { transform: translateZ(100px); }
         
-        .reveal-delay-1 { transition-delay: 0.2s; }
-        .reveal-delay-2 { transition-delay: 0.4s; }
-        .reveal-delay-3 { transition-delay: 0.6s; }
-
-        /* Floating Animation for Elements */
-        .float-anim {
-            animation: float 6s ease-in-out infinite;
-        }
+        /* Horizontal Scroll specific */
+        .pin-wrap-sticky { height: 100vh; width: 100vw; position: sticky; top: 0; overflow: hidden; }
+        .pin-wrap { height: 100vh; width: max-content; display: flex; align-items: center; padding: 0 10vw; }
         
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Gold Gradient Text */
-        .text-gold-gradient {
-            background: linear-gradient(to right, #D4AF37, #ebd07f, #D4AF37);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F9F6F0;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #D4AF37;
-            border-radius: 5px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #b5952f;
-        }
-
-        /* Content Wrapper to sit above canvas */
-        .content-wrapper {
-            position: relative;
-            z-index: 10;
-        }
+        a, button { cursor: none; }
     </style>
 </head>
-<body class="font-sans text-gray-800 antialiased selection:bg-wedding-gold selection:text-white">
 
-    <canvas id="particle-canvas"></canvas>
+<body class="font-body selection:bg-accent-rose selection:text-white cursor-none">
 
-    <div class="content-wrapper">
-        <header class="relative min-h-screen flex items-center justify-center bg-hero-pattern bg-cover bg-center bg-fixed bg-no-repeat overflow-hidden">
-            <!-- Overlay gradient -->
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-wedding-burgundy/20 to-wedding-bg"></div>
-            
-            <div class="relative z-10 text-center px-4 w-full max-w-4xl mx-auto">
-                <p class="text-wedding-gold-light tracking-[0.3em] uppercase text-sm md:text-base font-semibold mb-6 reveal">We are getting married</p>
+    <div id="preloader">
+        <div class="relative flex items-center justify-center">
+            <div class="loader-ring absolute"></div>
+            <span class="font-script text-3xl text-accent-gold ml-2">S & R</span>
+        </div>
+        <div class="glass-curtain absolute inset-0 bg-white/50 backdrop-blur-3xl transform origin-top translate-y-full"></div>
+    </div>
+
+    <div id="custom-cursor"></div>
+    <canvas id="ambient-canvas"></canvas>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <!-- SECTION 1: HERO (3D Tilt & Parallax Scrubbing) -->
+            <section id="hero" class="relative h-screen w-full flex items-center justify-center overflow-hidden tilt-container perspective-1000">
                 
-                <h1 class="font-script text-7xl md:text-8xl lg:text-9xl text-white mb-4 drop-shadow-lg reveal reveal-delay-1 float-anim">
-                    Souvik <span class="text-wedding-gold">&amp;</span> Reetu
-                </h1>
-                
-                <div class="flex items-center justify-center space-x-4 my-8 reveal reveal-delay-2">
-                    <div class="h-px w-16 md:w-24 bg-wedding-gold"></div>
-                    <i class="fas fa-heart text-wedding-gold text-xl"></i>
-                    <div class="h-px w-16 md:w-24 bg-wedding-gold"></div>
-                </div>
-                
-                <p class="font-serif text-2xl md:text-3xl text-white font-light tracking-wide reveal reveal-delay-3">
-                    December 13<sup class="text-sm">th</sup> & 15<sup class="text-sm">th</sup>, 2026
-                </p>
-                
-                <!-- Scroll down indicator -->
-                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer reveal reveal-delay-3">
-                    <a href="#countdown" class="text-wedding-gold-light opacity-80 hover:opacity-100 transition duration-300">
-                        <i class="fas fa-chevron-down text-3xl"></i>
-                    </a>
-                </div>
-            </div>
-        </header>
+                <!-- Floating Glass Orbs for Extreme Parallax -->
+                <div class="glass-orb orb-1 w-32 h-32 md:w-64 md:h-64 left-[10%] top-[20%] -z-10 opacity-70"></div>
+                <div class="glass-orb orb-2 w-20 h-20 md:w-40 md:h-40 right-[15%] top-[10%] -z-10 opacity-50 blur-sm"></div>
+                <div class="glass-orb orb-3 w-48 h-48 md:w-96 md:h-96 right-[5%] bottom-[-10%] z-20 opacity-80 blur-[2px]"></div>
+                <div class="glass-orb orb-4 w-16 h-16 left-[20%] bottom-[15%] z-20 opacity-90"></div>
 
-        <section id="countdown" class="py-20 bg-floral-pattern">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-12 reveal">
-                    <h2 class="font-script text-5xl md:text-6xl text-wedding-burgundy mb-4">The Countdown Begins</h2>
-                    <p class="font-serif text-lg text-gray-600">Until we say "I do"</p>
-                </div>
-                
-                <div class="flex flex-wrap justify-center gap-4 md:gap-8 max-w-3xl mx-auto reveal reveal-delay-1">
-                    <!-- Days -->
-                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <span id="days" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
-                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Days</span>
-                    </div>
-                    <!-- Hours -->
-                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <span id="hours" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
-                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Hours</span>
-                    </div>
-                    <!-- Minutes -->
-                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <span id="minutes" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
-                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Mins</span>
-                    </div>
-                    <!-- Seconds -->
-                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <span id="seconds" class="font-serif text-3xl md:text-4xl text-wedding-burgundy font-bold">00</span>
-                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Secs</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="events" class="py-24 bg-white relative">
-            <div class="container mx-auto px-4 max-w-5xl relative z-10">
-                <div class="text-center mb-16 reveal">
-                    <h2 class="font-script text-5xl md:text-7xl text-wedding-green mb-4">Wedding Events</h2>
-                    <div class="h-1 w-20 bg-wedding-gold mx-auto rounded"></div>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-10 md:gap-16">
-                    <!-- Marriage Card -->
-                    <div class="bg-wedding-bg p-8 md:p-12 rounded-t-full border-t-8 border-wedding-burgundy shadow-xl text-center transform transition duration-500 hover:-translate-y-2 reveal reveal-delay-1 relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-full h-full bg-wedding-burgundy/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
-                        <div class="w-20 h-20 mx-auto bg-wedding-burgundy rounded-full flex items-center justify-center mb-6 shadow-lg text-white">
-                            <i class="fa-solid fa-rings-wedding text-3xl"></i>
-                        </div>
-                        <h3 class="font-serif text-3xl text-wedding-burgundy mb-2">The Marriage</h3>
-                        <p class="text-wedding-gold font-bold tracking-widest mb-6">SUNDAY</p>
-                        <div class="font-serif text-2xl mb-4 border-y border-wedding-gold/30 py-4">
-                            13<sup class="text-sm">th</sup> December 2026<br>
-                            <span class="text-lg text-gray-600 mt-2 block"><i class="far fa-clock text-wedding-gold mr-2"></i> 7:00 PM Onwards</span>
-                        </div>
-                        <p class="text-gray-600 leading-relaxed mt-6">
-                            Join us as we take our vows and step into a new journey of love and togetherness.
-                        </p>
-                    </div>
-
-                    <!-- Reception Card -->
-                    <div class="bg-wedding-bg p-8 md:p-12 rounded-t-full border-t-8 border-wedding-green shadow-xl text-center transform transition duration-500 hover:-translate-y-2 reveal reveal-delay-2 relative overflow-hidden group">
-                        <div class="absolute top-0 left-0 w-full h-full bg-wedding-green/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
-                        <div class="w-20 h-20 mx-auto bg-wedding-green rounded-full flex items-center justify-center mb-6 shadow-lg text-white">
-                            <i class="fa-solid fa-glass-cheers text-3xl"></i>
-                        </div>
-                        <h3 class="font-serif text-3xl text-wedding-green mb-2">The Reception</h3>
-                        <p class="text-wedding-gold font-bold tracking-widest mb-6">TUESDAY</p>
-                        <div class="font-serif text-2xl mb-4 border-y border-wedding-gold/30 py-4">
-                            15<sup class="text-sm">th</sup> December 2026<br>
-                            <span class="text-lg text-gray-600 mt-2 block"><i class="far fa-clock text-wedding-gold mr-2"></i> 8:00 PM Onwards</span>
-                        </div>
-                        <p class="text-gray-600 leading-relaxed mt-6">
-                            Celebrate with us an evening filled with joy, dinner, and dancing to mark our new beginning.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="venue" class="py-24 bg-wedding-green text-white relative">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 pointer-events-none"></div>
-            <div class="container mx-auto px-4 max-w-4xl relative z-10 text-center">
-                <div class="reveal">
-                    <i class="fas fa-map-marked-alt text-5xl text-wedding-gold mb-6 float-anim inline-block"></i>
-                    <h2 class="font-script text-5xl md:text-6xl mb-8">Venue Details</h2>
+                <div class="hero-content relative z-10 text-center px-4 w-full flex flex-col items-center">
                     
-                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 md:p-12 rounded-2xl shadow-2xl">
-                        <h3 class="font-serif text-3xl md:text-4xl text-wedding-gold mb-4">Krishna Kunja</h3>
-                        <p class="text-lg md:text-xl font-light leading-relaxed mb-8 text-gray-200">
-                            Canning- Herobhanga Rd, Dighirpar,<br>
-                            Canning, West Bengal 743329
+                    <p class="hero-pretext font-body tracking-[0.5em] uppercase text-xs md:text-sm text-text-secondary mb-6 tilt-element opacity-0">
+                        The Wedding Celebration of
+                    </p>
+
+                    <div class="relative w-full flex justify-center items-center tilt-element-deep">
+                        <h1 class="font-display text-7xl md:text-[10vw] leading-none text-text-primary flex items-center justify-center flex-wrap gap-x-4 md:gap-x-12">
+                            <span class="hero-name split-text" data-text="Souvik">Souvik</span>
+                            <span class="hero-amp font-script text-accent-rose text-6xl md:text-9xl font-normal opacity-0 scale-0 origin-center">&amp;</span>
+                            <span class="hero-name split-text" data-text="Reetu">Reetu</span>
+                        </h1>
+                    </div>
+                    
+                    <div class="glass-panel px-10 py-5 rounded-full mt-12 opacity-0 hero-date tilt-element">
+                        <p class="font-body tracking-widest text-sm md:text-lg text-text-primary font-medium">
+                            DEC 13 &mdash; 2026
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 hero-scroll">
+                        <div class="w-[1px] h-24 bg-gradient-to-b from-text-secondary/50 to-transparent overflow-hidden">
+                            <div class="w-full h-1/2 bg-accent-gold animate-[scroll-down_1.5s_cubic-bezier(0.77,0,0.175,1)_infinite]"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INTERSTITIAL: Kinetic Scroll Text -->
+            <section class="h-screen w-full flex items-center justify-center overflow-hidden bg-transparent pointer-events-none relative z-20">
+                <h2 id="kinetic-text" class="font-display text-[15vw] leading-none text-black/5 whitespace-nowrap text-center">
+                    ETHEREAL UNION
+                </h2>
+            </section>
+
+            <!-- SECTION 2: THE INVITATION (Z-Axis Zoom) -->
+            <section id="invitation" class="relative min-h-[100vh] bg-transparent z-30">
+                <div class="invite-pin-container sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+                    
+                    <!-- Expanding Glass Ring -->
+                    <div class="expand-ring absolute w-[10vw] h-[10vw] rounded-full border border-accent-gold/30 opacity-0 pointer-events-none"></div>
+
+                    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
+                        <div class="glass-panel p-10 md:p-24 rounded-[3rem] md:rounded-[5rem] invite-card transform-gpu">
+                            <h2 class="font-script text-5xl md:text-7xl text-accent-rose mb-8 invite-text">A New Chapter</h2>
+                            <p class="font-display text-2xl md:text-4xl text-text-primary leading-snug invite-text">
+                                As we step into a new journey together, <br class="hidden md:block"/>
+                                your presence will be our greatest blessing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: EVENTS (Extreme Horizontal Scroll) -->
+            <section id="events-section" class="relative z-40 bg-white/20 backdrop-blur-sm">
+                <div class="pin-wrap-sticky">
+                    <div class="pin-wrap">
+                        
+                        <!-- Intro card for Horizontal scroll -->
+                        <div class="w-screen max-w-[400px] md:max-w-[600px] flex-shrink-0 pr-10 md:pr-32">
+                            <h2 class="font-display text-5xl md:text-7xl text-text-primary leading-tight">The <br><span class="font-script text-accent-rose">Celebrations</span></h2>
+                            <p class="font-body text-lg mt-6 text-text-secondary tracking-wide">Scroll to explore the itinerary.</p>
+                            <div class="w-16 h-[1px] bg-black mt-8"></div>
+                        </div>
+
+                        <!-- Event 1 -->
+                        <div class="w-[85vw] md:w-[60vw] max-w-[800px] flex-shrink-0 pr-8 md:pr-16">
+                            <div class="event-card-horiz glass-panel rounded-3xl p-10 md:p-16 h-full flex flex-col justify-center relative overflow-hidden group transform-gpu">
+                                <div class="absolute top-0 right-0 w-64 h-64 bg-accent-rose/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                
+                                <p class="font-body text-accent-rose tracking-[0.3em] text-sm font-semibold mb-4">SUNDAY</p>
+                                <h3 class="font-display text-5xl md:text-6xl text-text-primary mb-8">The Marriage</h3>
+                                
+                                <div class="flex items-center mb-12">
+                                    <div class="border-l-2 border-accent-gold pl-6">
+                                        <span class="block font-display text-5xl md:text-6xl text-text-primary leading-none">13</span>
+                                        <span class="block font-body text-sm tracking-[0.2em] text-text-secondary mt-2">DECEMBER</span>
+                                    </div>
+                                    <div class="ml-12 border-l-2 border-black/10 pl-6">
+                                        <p class="font-body text-xl md:text-2xl text-text-secondary">7:00 PM Onwards</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start text-text-secondary border-t border-black/10 pt-8 mt-auto">
+                                    <svg class="w-6 h-6 mr-4 mt-1 text-accent-rose flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                    <p class="font-body text-lg md:text-xl leading-relaxed">
+                                        Krishna Kunja,<br>Canning-Herobhanga Rd, Dighirpar,<br>Canning, West Bengal 743329
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event 2 -->
+                        <div class="w-[85vw] md:w-[60vw] max-w-[800px] flex-shrink-0">
+                            <div class="event-card-horiz glass-panel rounded-3xl p-10 md:p-16 h-full flex flex-col justify-center relative overflow-hidden group transform-gpu">
+                                <div class="absolute top-0 right-0 w-64 h-64 bg-accent-sage/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                
+                                <p class="font-body text-accent-sage tracking-[0.3em] text-sm font-semibold mb-4">TUESDAY</p>
+                                <h3 class="font-display text-5xl md:text-6xl text-text-primary mb-8">The Reception</h3>
+                                
+                                <div class="flex items-center mb-12">
+                                    <div class="border-l-2 border-accent-gold pl-6">
+                                        <span class="block font-display text-5xl md:text-6xl text-text-primary leading-none">15</span>
+                                        <span class="block font-body text-sm tracking-[0.2em] text-text-secondary mt-2">DECEMBER</span>
+                                    </div>
+                                    <div class="ml-12 border-l-2 border-black/10 pl-6">
+                                        <p class="font-body text-xl md:text-2xl text-text-secondary">8:00 PM Onwards</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start text-text-secondary border-t border-black/10 pt-8 mt-auto">
+                                    <svg class="w-6 h-6 mr-4 mt-1 text-accent-sage flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                    <p class="font-body text-lg md:text-xl leading-relaxed">
+                                        Krishna Kunja,<br>Canning-Herobhanga Rd, Dighirpar,<br>Canning, West Bengal 743329
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: MAP & LOCATION -->
+            <section id="location" class="relative py-32 min-h-screen flex flex-col justify-center items-center overflow-hidden z-20">
+                
+                <!-- Dynamic background gradient ring for map area -->
+                <div class="absolute w-[800px] h-[800px] rounded-full border-[1px] border-accent-gold/20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 location-ring"></div>
+                <div class="absolute w-[1200px] h-[1200px] rounded-full border-[1px] border-accent-rose/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 location-ring-2"></div>
+
+                <div class="container mx-auto px-4 max-w-4xl text-center relative z-10">
+                    <div class="glass-panel p-12 md:p-24 rounded-[3rem] shadow-2xl relative overflow-hidden group location-container transform-gpu">
+                        
+                        <div class="absolute -inset-1 bg-gradient-to-r from-accent-rose via-white to-accent-sage opacity-30 blur-2xl group-hover:opacity-60 transition-opacity duration-1000 rounded-[3rem]"></div>
+                        
+                        <h2 class="font-display text-5xl md:text-7xl text-text-primary mb-6 relative z-10">Join Us</h2>
+                        <p class="font-body text-xl text-text-secondary mb-12 max-w-lg mx-auto relative z-10">
+                            We cannot wait to celebrate this beautiful milestone with you at Krishna Kunja.
                         </p>
                         
                         <a href="https://www.google.com/maps/search/?api=1&query=Krishna+Kunja,+Canning-+Herobhanga+Rd,+Dighirpar,+Canning,+West+Bengal+743329" 
                            target="_blank" rel="noopener noreferrer"
-                           class="inline-block px-8 py-3 bg-wedding-gold text-wedding-green font-semibold rounded-full hover:bg-white transition duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
-                            <i class="fas fa-directions mr-2"></i> Get Directions
+                           class="interactive-element inline-flex items-center justify-center px-10 py-5 rounded-full bg-text-primary text-white font-body tracking-[0.2em] uppercase text-sm hover:scale-105 transition-transform duration-500 relative z-10 overflow-hidden group/btn shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                Open in Google Maps
+                            </span>
+                            <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-accent-gold to-accent-rose transform scale-x-0 group-hover/btn:scale-x-100 transition-transform origin-left duration-700 ease-out z-0"></div>
                         </a>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <footer class="bg-wedding-bg py-12 text-center border-t border-gray-200">
-            <div class="container mx-auto px-4 reveal">
-                <h2 class="font-script text-4xl md:text-5xl text-wedding-burgundy mb-4">With Love</h2>
-                <p class="font-serif text-2xl text-gray-700">Souvik & Reetu</p>
-                <div class="mt-8 text-gray-500 text-sm">
-                    <p>We can't wait to celebrate with you!</p>
+            <!-- FOOTER -->
+            <footer class="relative py-24 text-center overflow-hidden z-20">
+                <div class="mx-4 md:mx-12 rounded-[2rem] py-16 px-4">
+                    <p class="font-script text-4xl md:text-6xl text-accent-rose mb-6 footer-el">With Love,</p>
+                    <h2 class="font-display text-5xl md:text-8xl text-text-primary footer-el">Souvik & Reetu</h2>
                 </div>
-            </div>
-        </footer>
-    </div>
+            </footer>
+
+        </div>
+    </main>
 
     <script>
-        // --- 1. Scroll Reveal Logic via Intersection Observer ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const reveals = document.querySelectorAll('.reveal');
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Utility: Text Splitter for Character Animation ---
+        document.querySelectorAll('.split-text').forEach(el => {
+            const text = el.getAttribute('data-text');
+            el.innerHTML = text.split('').map(char => 
+                `<span class="split-char">${char === ' ' ? '&nbsp;' : char}</span>`
+            ).join('');
+        });
+
+        // --- Custom Cursor ---
+        const cursor = document.getElementById('custom-cursor');
+        const interactiveElements = document.querySelectorAll('a, button, .interactive-element');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.15, ease: "power2.out" });
+        });
+
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // --- Lenis Smooth Scrolling ---
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            smoothTouch: false, // Prevent issues on mobile touch
+        });
+
+        let scrollVelocity = 0;
+        lenis.on('scroll', (e) => {
+            scrollVelocity = e.velocity;
+            ScrollTrigger.update();
+        });
+
+        gsap.ticker.add((time)=>{ lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+
+        // --- Velocity-Reactive Liquid Canvas Background ---
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let blobs = [];
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            blobs = [
+                { x: width * 0.2, y: height * 0.2, r: width * 0.5, color: '#FFE6E6', baseVx: 0.5, baseVy: 0.7, vx: 0.5, vy: 0.7 },
+                { x: width * 0.8, y: height * 0.3, r: width * 0.6, color: '#F0F5E6', baseVx: -0.6, baseVy: 0.4, vx: -0.6, vy: 0.4 },
+                { x: width * 0.5, y: height * 0.8, r: width * 0.5, color: '#FDF7E5', baseVx: 0.4, baseVy: -0.6, vx: 0.4, vy: -0.6 }
+            ];
+        }
+
+        function drawAmbient() {
+            ctx.clearRect(0, 0, width, height);
             
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        // Optional: Unobserve after revealing to keep it visible
-                        // revealObserver.unobserve(entry.target); 
-                    }
-                });
-            }, {
-                threshold: 0.15, // Trigger when 15% of element is visible
-                rootMargin: "0px 0px -50px 0px"
+            // Extreme animation touch: Blobs speed up based on scroll velocity
+            const velocityMultiplier = 1 + Math.abs(scrollVelocity) * 0.1;
+
+            blobs.forEach(blob => {
+                // Apply scroll velocity to movement
+                blob.vx = blob.baseVx * velocityMultiplier;
+                blob.vy = blob.baseVy * velocityMultiplier;
+
+                blob.x += blob.vx;
+                blob.y += blob.vy;
+
+                if (blob.x < -blob.r || blob.x > width + blob.r) blob.baseVx *= -1;
+                if (blob.y < -blob.r || blob.y > height + blob.r) blob.baseVy *= -1;
+
+                const gradient = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, blob.r * (1 + Math.abs(scrollVelocity)*0.02));
+                gradient.addColorStop(0, blob.color);
+                gradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(blob.x, blob.y, blob.r * 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawAmbient);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        drawAmbient();
+
+        // --- STREAMING_CHUNK:Building GSAP Timelines for Extreme Animation ---
+
+        // 1. Preloader & Hero Reveal Sequence
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            
+            // Hide preloader spinner
+            tl.to('.loader-ring, #preloader span', { opacity: 0, duration: 0.5, ease: "power2.inOut" })
+              // Drop the glass curtain
+              .to('.glass-curtain', { y: "0%", duration: 1.2, ease: "expo.inOut" })
+              .set('#preloader', { display: "none" })
+              // Reveal Hero Elements
+              .to('.hero-pretext', { opacity: 1, duration: 1, ease: "power2.out" }, "-=0.5")
+              // Staggered Character Reveal for Names
+              .to('.hero-name .split-char', { 
+                  y: "0%", opacity: 1, rotateX: "0deg", 
+                  duration: 1.2, stagger: 0.05, ease: "back.out(1.7)" 
+              }, "-=0.8")
+              .to('.hero-amp', { opacity: 1, scale: 1, duration: 1, ease: "elastic.out(1, 0.5)" }, "-=0.8")
+              .to('.hero-date', { opacity: 1, z: 0, duration: 1, ease: "power3.out" }, "-=0.6")
+              .to('.hero-scroll', { opacity: 1, duration: 1 }, "-=0.4");
+        });
+
+        // 2. 3D Mouse Tracking on Hero
+        const tiltContainer = document.querySelector('.tilt-container');
+        const tiltElements = document.querySelectorAll('.tilt-element, .tilt-element-deep');
+        
+        tiltContainer.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+            
+            gsap.to(tiltElements, {
+                rotationY: xAxis,
+                rotationX: yAxis,
+                duration: 1,
+                ease: "power2.out",
+                transformPerspective: 1000
+            });
+        });
+        tiltContainer.addEventListener('mouseleave', () => {
+            gsap.to(tiltElements, { rotationY: 0, rotationX: 0, duration: 1, ease: "power2.out" });
+        });
+
+        // 3. Hero Parallax Scroll Scrubbing (Extreme Animation)
+        gsap.to('.orb-1', { y: -300, x: 100, rotation: 45, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 }});
+        gsap.to('.orb-2', { y: -150, x: -50, rotation: -45, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1.5 }});
+        gsap.to('.orb-3', { y: -400, scale: 1.2, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 0.5 }});
+        gsap.to('.hero-content', { y: 200, opacity: 0, scale: 0.9, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }});
+
+        // 4. Kinetic Typography Scrub
+        gsap.fromTo('#kinetic-text', 
+            { scale: 0.5, y: 100 },
+            { 
+                scale: 5, y: -200, opacity: 0,
+                scrollTrigger: {
+                    trigger: "#kinetic-text",
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1
+                }
+            }
+        );
+
+        // 5. Pinned Z-Axis Invitation Card
+        const inviteTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#invitation",
+                start: "center center",
+                end: "+=150%", // Pin for 150% of viewport height
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+
+        // Card flies in from depth, ring expands out
+        inviteTl.from('.invite-card', { scale: 0.5, opacity: 0, rotationX: 45, transformPerspective: 1000, duration: 2 })
+                .to('.expand-ring', { opacity: 1, scale: 15, borderWidth: "1px", duration: 3 }, "<")
+                .from('.invite-text', { y: 50, opacity: 0, stagger: 0.5, duration: 2 }, "-=1")
+                // fade out as user leaves pin
+                .to('.invite-card', { scale: 1.1, opacity: 0, duration: 2 }, "+=1");
+
+        // 6. Horizontal Scroll for Events (The "Apple" Effect)
+        // Only run horizontal scroll logic if screen is wide enough, else it breaks layout.
+        // Tailwind breakpoints: md is 768px.
+        let mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+            const horizontalScrollWrapper = document.querySelector('.pin-wrap');
+            
+            // Calculate total width to scroll
+            function getScrollAmount() {
+                let wrapperWidth = horizontalScrollWrapper.scrollWidth;
+                return -(wrapperWidth - window.innerWidth);
+            }
+
+            const tween = gsap.to(horizontalScrollWrapper, {
+                x: getScrollAmount,
+                ease: "none"
             });
 
-            reveals.forEach(reveal => revealObserver.observe(reveal));
+            ScrollTrigger.create({
+                trigger: "#events-section",
+                start: "top top",
+                end: () => `+=${getScrollAmount() * -1}`,
+                pin: true,
+                animation: tween,
+                scrub: 1,
+                invalidateOnRefresh: true
+            });
+
+            // Parallax inside the horizontal cards
+            gsap.utils.toArray('.event-card-horiz').forEach(card => {
+                gsap.from(card.querySelectorAll('h3, p, div'), {
+                    x: 50,
+                    opacity: 0.5,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: card,
+                        containerAnimation: tween,
+                        start: "left center",
+                        scrub: true
+                    }
+                });
+            });
         });
 
-        // --- 2. Countdown Timer Logic ---
-        // Setting date to Dec 13, 2026 19:00:00 (7 PM for marriage start)
-        const countdownDate = new Date("Dec 13, 2026 19:00:00").getTime();
-
-        const timer = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = countdownDate - now;
-
-            // Time calculations
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Update DOM
-            document.getElementById("days").innerText = days.toString().padStart(2, '0');
-            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
-
-            // If countdown finished
-            if (distance < 0) {
-                clearInterval(timer);
-                document.getElementById("days").innerText = "00";
-                document.getElementById("hours").innerText = "00";
-                document.getElementById("minutes").innerText = "00";
-                document.getElementById("seconds").innerText = "00";
-                // Optionally show a message
+        // 7. Location Rings and Reveal
+        gsap.from('.location-ring', {
+            scale: 0, opacity: 0, rotation: 180,
+            scrollTrigger: {
+                trigger: "#location", start: "top center", end: "center center", scrub: 1
             }
-        }, 1000);
-
-        // --- 3. Particle System (Golden Fireflies/Dust) ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let w, h;
-
-        function resizeCanvas() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * w;
-                this.y = Math.random() * h;
-                this.size = Math.random() * 2.5 + 0.5; // size between 0.5 and 3
-                this.speedX = Math.random() * 0.5 - 0.25; // drift left/right
-                this.speedY = Math.random() * -0.5 - 0.1; // drift upwards
-                // Golden colors with varying opacities
-                this.opacity = Math.random() * 0.5 + 0.1; 
-                this.color = `rgba(212, 175, 55, ${this.opacity})`;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Wrap around edges
-                if (this.x > w) this.x = 0;
-                if (this.x < 0) this.x = w;
-                if (this.y < 0) {
-                    this.y = h;
-                    this.x = Math.random() * w;
-                }
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                
-                // Add a subtle glow effect to larger particles
-                if(this.size > 2) {
-                    ctx.shadowBlur = 10;
-                    ctx.shadowColor = "rgba(212, 175, 55, 0.8)";
-                } else {
-                    ctx.shadowBlur = 0;
-                }
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            // Number of particles depends on screen width for performance
-            const particleCount = window.innerWidth < 768 ? 40 : 100;
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, w, h);
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-            }
-            requestAnimationFrame(animateParticles);
-        }
-
-        // Start animation loop
-        initParticles();
-        animateParticles();
-        
-        // Re-init particles if orientation changes significantly
-        window.addEventListener('orientationchange', () => {
-            setTimeout(() => {
-                resizeCanvas();
-                initParticles();
-            }, 200);
         });
+        gsap.from('.location-ring-2', {
+            scale: 0, opacity: 0, rotation: -180,
+            scrollTrigger: {
+                trigger: "#location", start: "top bottom", end: "center center", scrub: 1.5
+            }
+        });
+        gsap.from('.location-container', {
+            y: 100, opacity: 0, rotationX: -20, transformPerspective: 1000,
+            scrollTrigger: {
+                trigger: "#location", start: "top 70%", end: "center center", scrub: 1
+            }
+        });
+
+        // 8. Footer subtle parallax
+        gsap.from('.footer-el', {
+            y: 50, opacity: 0, stagger: 0.2,
+            scrollTrigger: {
+                trigger: "footer", start: "top bottom", end: "bottom bottom", scrub: true
+            }
+        });
+
     </script>
+
+    <style>
+        /* CSS Keyframe additions */
+        @keyframes scroll-down {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(200%); opacity: 0; }
+        }
+    </style>
 </body>
 </html>

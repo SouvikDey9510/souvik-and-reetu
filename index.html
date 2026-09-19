@@ -3,39 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Souvik & Reetu | The Wedding</title>
-
+    <title>Souvik & Reetu - Wedding Invitation</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- GSAP & ScrollTrigger for optimized animations -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <!-- Lenis for hardware-accelerated smooth scrolling -->
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
-    <!-- FontAwesome for elegant icons -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Tailwind Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Montserrat', 'sans-serif'],
-                        serif: ['Cormorant Garamond', 'serif'],
-                    },
                     colors: {
-                        'pure-black': '#000000',
-                        'space-gray': '#1d1d1f',
-                        'silver': '#f5f5f7',
-                        'subtle-gold': '#d4af37',
+                        'wedding-burgundy': '#6A1E27',
+                        'wedding-green': '#2C4A3B',
+                        'wedding-gold': '#D4AF37',
+                        'wedding-gold-light': '#ebd07f',
+                        'wedding-bg': '#F9F6F0',
+                    },
+                    fontFamily: {
+                        'script': ['"Great Vibes"', 'cursive'],
+                        'serif': ['"Playfair Display"', 'serif'],
+                        'sans': ['"Lora"', 'serif'],
                     },
                     backgroundImage: {
-                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'hero-pattern': "linear-gradient(to bottom, rgba(44, 74, 59, 0.8), rgba(106, 30, 39, 0.8)), url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80')",
+                        'floral-pattern': "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23d4af37\\' fill-opacity=\\'0.1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')",
                     }
                 }
             }
@@ -43,371 +43,361 @@
     </script>
 
     <style>
-        /* Lenis Smooth Scrolling Base */
-        html.lenis {
-            height: auto;
-        }
-        .lenis.lenis-smooth {
-            scroll-behavior: auto;
-        }
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-        .lenis.lenis-stopped {
-            overflow: hidden;
-        }
-        .lenis.lenis-scrolling iframe {
-            pointer-events: none;
-        }
-
-        /* Base Resets & Hardware Acceleration */
         body {
-            background-color: #000000;
-            color: #f5f5f7;
+            background-color: #F9F6F0;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Hardware Acceleration Utility */
-        .hw-accel {
-            transform: translate3d(0, 0, 0);
-            backface-visibility: hidden;
-            perspective: 1000px;
-        }
-
-        /* Glassmorphism Utilities */
-        .glass-panel {
-            background: rgba(25, 25, 25, 0.4);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Dynamic Background fixed behind content */
-        .ambient-canvas {
+        /* Particle Canvas */
+        #particle-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000000 100%);
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
-        
-        .ambient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            will-change: transform;
-        }
-        .orb-1 { width: 40vw; height: 40vw; background: #2a2a2a; top: -10%; left: -10%; }
-        .orb-2 { width: 30vw; height: 30vw; background: #1f1f1f; bottom: -10%; right: -10%; }
-        .orb-3 { width: 20vw; height: 20vw; background: rgba(212, 175, 55, 0.15); top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* Typography Refinements */
-        .text-balance {
-            text-wrap: balance;
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
         }
         
-        /* Reveal Mask */
-        .reveal-mask {
-            clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
-            will-change: clip-path, transform;
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .reveal-delay-1 { transition-delay: 0.2s; }
+        .reveal-delay-2 { transition-delay: 0.4s; }
+        .reveal-delay-3 { transition-delay: 0.6s; }
+
+        /* Floating Animation for Elements */
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Gold Gradient Text */
+        .text-gold-gradient {
+            background: linear-gradient(to right, #D4AF37, #ebd07f, #D4AF37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F9F6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b5952f;
+        }
+
+        /* Content Wrapper to sit above canvas */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
-<body class="font-sans font-light">
+<body class="font-sans text-gray-800 antialiased selection:bg-wedding-gold selection:text-white">
 
-    <!-- Ambient Fixed Background -->
-    <div class="ambient-canvas hw-accel" id="ambient-bg">
-        <div class="ambient-orb orb-1"></div>
-        <div class="ambient-orb orb-2"></div>
-        <div class="ambient-orb orb-3"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="content-wrapper">
+        <header class="relative min-h-screen flex items-center justify-center bg-hero-pattern bg-cover bg-center bg-fixed bg-no-repeat overflow-hidden">
+            <!-- Overlay gradient -->
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-wedding-burgundy/20 to-wedding-bg"></div>
+            
+            <div class="relative z-10 text-center px-4 w-full max-w-4xl mx-auto">
+                <p class="text-wedding-gold-light tracking-[0.3em] uppercase text-sm md:text-base font-semibold mb-6 reveal">We are getting married</p>
+                
+                <h1 class="font-script text-7xl md:text-8xl lg:text-9xl text-white mb-4 drop-shadow-lg reveal reveal-delay-1 float-anim">
+                    Souvik <span class="text-wedding-gold">&amp;</span> Reetu
+                </h1>
+                
+                <div class="flex items-center justify-center space-x-4 my-8 reveal reveal-delay-2">
+                    <div class="h-px w-16 md:w-24 bg-wedding-gold"></div>
+                    <i class="fas fa-heart text-wedding-gold text-xl"></i>
+                    <div class="h-px w-16 md:w-24 bg-wedding-gold"></div>
+                </div>
+                
+                <p class="font-serif text-2xl md:text-3xl text-white font-light tracking-wide reveal reveal-delay-3">
+                    December 13<sup class="text-sm">th</sup> & 15<sup class="text-sm">th</sup>, 2026
+                </p>
+                
+                <!-- Scroll down indicator -->
+                <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer reveal reveal-delay-3">
+                    <a href="#countdown" class="text-wedding-gold-light opacity-80 hover:opacity-100 transition duration-300">
+                        <i class="fas fa-chevron-down text-3xl"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <section id="countdown" class="py-20 bg-floral-pattern">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-12 reveal">
+                    <h2 class="font-script text-5xl md:text-6xl text-wedding-burgundy mb-4">The Countdown Begins</h2>
+                    <p class="font-serif text-lg text-gray-600">Until we say "I do"</p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-4 md:gap-8 max-w-3xl mx-auto reveal reveal-delay-1">
+                    <!-- Days -->
+                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        <span id="days" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
+                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Days</span>
+                    </div>
+                    <!-- Hours -->
+                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        <span id="hours" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
+                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Hours</span>
+                    </div>
+                    <!-- Minutes -->
+                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        <span id="minutes" class="font-serif text-3xl md:text-4xl text-wedding-green font-bold">00</span>
+                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Mins</span>
+                    </div>
+                    <!-- Seconds -->
+                    <div class="flex flex-col items-center justify-center w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-wedding-gold bg-white shadow-[0_0_15px_rgba(212,175,55,0.3)]">
+                        <span id="seconds" class="font-serif text-3xl md:text-4xl text-wedding-burgundy font-bold">00</span>
+                        <span class="text-xs md:text-sm uppercase tracking-wider text-gray-500 mt-1">Secs</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="py-24 bg-white relative">
+            <div class="container mx-auto px-4 max-w-5xl relative z-10">
+                <div class="text-center mb-16 reveal">
+                    <h2 class="font-script text-5xl md:text-7xl text-wedding-green mb-4">Wedding Events</h2>
+                    <div class="h-1 w-20 bg-wedding-gold mx-auto rounded"></div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-10 md:gap-16">
+                    <!-- Marriage Card -->
+                    <div class="bg-wedding-bg p-8 md:p-12 rounded-t-full border-t-8 border-wedding-burgundy shadow-xl text-center transform transition duration-500 hover:-translate-y-2 reveal reveal-delay-1 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-full h-full bg-wedding-burgundy/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+                        <div class="w-20 h-20 mx-auto bg-wedding-burgundy rounded-full flex items-center justify-center mb-6 shadow-lg text-white">
+                            <i class="fa-solid fa-rings-wedding text-3xl"></i>
+                        </div>
+                        <h3 class="font-serif text-3xl text-wedding-burgundy mb-2">The Marriage</h3>
+                        <p class="text-wedding-gold font-bold tracking-widest mb-6">SUNDAY</p>
+                        <div class="font-serif text-2xl mb-4 border-y border-wedding-gold/30 py-4">
+                            13<sup class="text-sm">th</sup> December 2026<br>
+                            <span class="text-lg text-gray-600 mt-2 block"><i class="far fa-clock text-wedding-gold mr-2"></i> 7:00 PM Onwards</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed mt-6">
+                            Join us as we take our vows and step into a new journey of love and togetherness.
+                        </p>
+                    </div>
+
+                    <!-- Reception Card -->
+                    <div class="bg-wedding-bg p-8 md:p-12 rounded-t-full border-t-8 border-wedding-green shadow-xl text-center transform transition duration-500 hover:-translate-y-2 reveal reveal-delay-2 relative overflow-hidden group">
+                        <div class="absolute top-0 left-0 w-full h-full bg-wedding-green/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+                        <div class="w-20 h-20 mx-auto bg-wedding-green rounded-full flex items-center justify-center mb-6 shadow-lg text-white">
+                            <i class="fa-solid fa-glass-cheers text-3xl"></i>
+                        </div>
+                        <h3 class="font-serif text-3xl text-wedding-green mb-2">The Reception</h3>
+                        <p class="text-wedding-gold font-bold tracking-widest mb-6">TUESDAY</p>
+                        <div class="font-serif text-2xl mb-4 border-y border-wedding-gold/30 py-4">
+                            15<sup class="text-sm">th</sup> December 2026<br>
+                            <span class="text-lg text-gray-600 mt-2 block"><i class="far fa-clock text-wedding-gold mr-2"></i> 8:00 PM Onwards</span>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed mt-6">
+                            Celebrate with us an evening filled with joy, dinner, and dancing to mark our new beginning.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="venue" class="py-24 bg-wedding-green text-white relative">
+            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 pointer-events-none"></div>
+            <div class="container mx-auto px-4 max-w-4xl relative z-10 text-center">
+                <div class="reveal">
+                    <i class="fas fa-map-marked-alt text-5xl text-wedding-gold mb-6 float-anim inline-block"></i>
+                    <h2 class="font-script text-5xl md:text-6xl mb-8">Venue Details</h2>
+                    
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 md:p-12 rounded-2xl shadow-2xl">
+                        <h3 class="font-serif text-3xl md:text-4xl text-wedding-gold mb-4">Krishna Kunja</h3>
+                        <p class="text-lg md:text-xl font-light leading-relaxed mb-8 text-gray-200">
+                            Canning- Herobhanga Rd, Dighirpar,<br>
+                            Canning, West Bengal 743329
+                        </p>
+                        
+                        <a href="https://www.google.com/maps/search/?api=1&query=Krishna+Kunja,+Canning-+Herobhanga+Rd,+Dighirpar,+Canning,+West+Bengal+743329" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="inline-block px-8 py-3 bg-wedding-gold text-wedding-green font-semibold rounded-full hover:bg-white transition duration-300 transform hover:scale-105 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                            <i class="fas fa-directions mr-2"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="bg-wedding-bg py-12 text-center border-t border-gray-200">
+            <div class="container mx-auto px-4 reveal">
+                <h2 class="font-script text-4xl md:text-5xl text-wedding-burgundy mb-4">With Love</h2>
+                <p class="font-serif text-2xl text-gray-700">Souvik & Reetu</p>
+                <div class="mt-8 text-gray-500 text-sm">
+                    <p>We can't wait to celebrate with you!</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <header class="relative w-full h-screen flex flex-col items-center justify-center z-10" id="hero">
-        <div class="text-center px-4 w-full max-w-6xl mx-auto flex flex-col items-center hw-accel">
-            
-            <p class="hero-intro font-sans text-silver/60 tracking-[0.5em] uppercase text-xs md:text-sm mb-6 opacity-0 translate-y-4">
-                We invite you to celebrate
-            </p>
-            
-            <div class="overflow-hidden pb-4">
-                <h1 class="hero-title font-serif text-6xl md:text-8xl lg:text-[9rem] leading-none text-white font-light text-balance reveal-mask">
-                    Souvik <span class="text-silver/40 font-extralight italic">&</span> Reetu
-                </h1>
-            </div>
-            
-            <div class="overflow-hidden mt-6">
-                <p class="hero-date font-sans text-sm md:text-base text-silver/80 tracking-[0.3em] uppercase reveal-mask">
-                    December 2026 &middot; West Bengal
-                </p>
-            </div>
-        </div>
-
-        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 hero-scroll text-silver/40">
-            <span class="text-[0.65rem] tracking-[0.4em] uppercase mb-4">Scroll</span>
-            <div class="w-[1px] h-16 bg-gradient-to-b from-silver/50 to-transparent"></div>
-        </div>
-    </header>
-
-    <section class="py-24 md:py-40 w-full relative z-10" id="countdown">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-2xl md:text-3xl font-serif text-white/80 mb-16 fade-up font-light tracking-wide">Time Until Forever</h2>
-            
-            <div class="glass-panel rounded-full py-8 px-6 md:px-16 mx-auto max-w-fit fade-up flex space-x-8 md:space-x-16 items-center justify-center hw-accel">
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="cd-days" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
-                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Days</span>
-                </div>
-                <div class="w-[1px] h-12 bg-white/10"></div>
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="cd-hours" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
-                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Hours</span>
-                </div>
-                <div class="w-[1px] h-12 bg-white/10"></div>
-                <div class="flex flex-col items-center w-16 md:w-24">
-                    <span id="cd-minutes" class="text-4xl md:text-6xl font-light font-serif text-white">00</span>
-                    <span class="text-[0.65rem] md:text-xs uppercase tracking-[0.2em] text-silver/60 mt-2">Mins</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 md:py-32 w-full relative z-10" id="events">
-        <div class="max-w-6xl mx-auto px-4 md:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                
-                <!-- Event 1: Marriage -->
-                <div class="glass-panel rounded-3xl p-8 md:p-12 fade-up-stagger hw-accel group hover:bg-white/[0.08] transition-colors duration-700">
-                    <div class="flex items-center justify-between mb-12">
-                        <span class="text-xs tracking-[0.3em] uppercase text-subtle-gold">Event I</span>
-                        <i class="fa-solid fa-rings-wedding text-2xl text-white/40 group-hover:text-subtle-gold transition-colors duration-500"></i>
-                    </div>
-                    
-                    <h3 class="text-4xl md:text-6xl font-serif font-light text-white mb-4">The Marriage</h3>
-                    <p class="text-xl font-serif text-silver/80 italic mb-8">Sunday, 13th December</p>
-                    
-                    <div class="w-full h-[1px] bg-white/10 mb-8"></div>
-                    
-                    <div class="space-y-4 text-sm font-sans text-silver/60 font-light leading-relaxed">
-                        <p class="flex items-start">
-                            <i class="fa-regular fa-clock mt-1 mr-4 w-4"></i>
-                            <span>Evening Ceremony</span>
-                        </p>
-                        <p class="flex items-start">
-                            <i class="fa-solid fa-location-dot mt-1 mr-4 w-4"></i>
-                            <span>Krishna Kunja, Canning- Herobhanga Rd,<br>Dighirpar, Canning, West Bengal 743329</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Event 2: Reception -->
-                <div class="glass-panel rounded-3xl p-8 md:p-12 fade-up-stagger hw-accel group hover:bg-white/[0.08] transition-colors duration-700 md:mt-24">
-                    <div class="flex items-center justify-between mb-12">
-                        <span class="text-xs tracking-[0.3em] uppercase text-subtle-gold">Event II</span>
-                        <i class="fa-solid fa-glass-cheers text-2xl text-white/40 group-hover:text-subtle-gold transition-colors duration-500"></i>
-                    </div>
-                    
-                    <h3 class="text-4xl md:text-6xl font-serif font-light text-white mb-4">The Reception</h3>
-                    <p class="text-xl font-serif text-silver/80 italic mb-8">Tuesday, 15th December</p>
-                    
-                    <div class="w-full h-[1px] bg-white/10 mb-8"></div>
-                    
-                    <div class="space-y-4 text-sm font-sans text-silver/60 font-light leading-relaxed">
-                        <p class="flex items-start">
-                            <i class="fa-regular fa-clock mt-1 mr-4 w-4"></i>
-                            <span>Dinner & Celebration</span>
-                        </p>
-                        <p class="flex items-start">
-                            <i class="fa-solid fa-location-dot mt-1 mr-4 w-4"></i>
-                            <span>Krishna Kunja, Canning- Herobhanga Rd,<br>Dighirpar, Canning, West Bengal 743329</span>
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <section class="w-full h-screen relative z-10 overflow-hidden flex items-center justify-center my-32">
-        <div class="absolute inset-0 w-full h-[120%] -top-[10%] hw-accel" id="parallax-wrapper">
-            <!-- Extremely high quality, elegant placeholder -->
-            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop" 
-                 alt="Elegance" 
-                 class="w-full h-full object-cover opacity-40">
-        </div>
-        <div class="relative z-10 text-center px-4 mix-blend-difference">
-            <h2 class="font-serif text-5xl md:text-8xl text-white font-light text-balance mb-6">Two hearts,<br>one journey.</h2>
-        </div>
-    </section>
-
-    <footer class="py-24 relative z-10 bg-pure-black border-t border-white/5">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <div class="font-serif text-3xl md:text-4xl text-white font-light mb-8 fade-up">We look forward to celebrating with you.</div>
-            <p class="text-sm font-sans text-silver/40 tracking-[0.2em] uppercase mt-16">
-                &copy; 2026 Souvik & Reetu
-            </p>
-        </div>
-    </footer>
-
     <script>
-        // 1. Hardware Accelerated Smooth Scrolling Setup (Lenis)
-        const lenis = new Lenis({
-            duration: 1.5, // Slower, more elegant glide
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-like cubic bezier
-            orientation: 'vertical',
-            gestureOrientation: 'vertical',
-            smoothWheel: true,
-            wheelMultiplier: 0.8, // Smooth out fast wheel movements
-            smoothTouch: false,
-            touchMultiplier: 2,
+        // --- 1. Scroll Reveal Logic via Intersection Observer ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optional: Unobserve after revealing to keep it visible
+                        // revealObserver.unobserve(entry.target); 
+                    }
+                });
+            }, {
+                threshold: 0.15, // Trigger when 15% of element is visible
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            reveals.forEach(reveal => revealObserver.observe(reveal));
         });
 
-        // Sync Lenis with GSAP ScrollTrigger
-        lenis.on('scroll', ScrollTrigger.update);
-        gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-        gsap.ticker.lagSmoothing(0); // Prevents GSAP from skipping frames, ensuring buttery smoothness
+        // --- 2. Countdown Timer Logic ---
+        // Setting date to Dec 13, 2026 19:00:00 (7 PM for marriage start)
+        const countdownDate = new Date("Dec 13, 2026 19:00:00").getTime();
 
-        // Enable global force3D for performance
-        gsap.defaults({ force3D: true });
+        const timer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // 2. Hero Initial Reveal Animations
-            const tlHero = gsap.timeline({ defaults: { ease: "power4.out" } });
+            // Time calculations
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            tlHero.to('.hero-intro', {
-                opacity: 1,
-                y: 0,
-                duration: 1.5,
-                delay: 0.2
-            })
-            .to('.hero-title.reveal-mask', {
-                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-                duration: 2,
-            }, "-=1")
-            .to('.hero-date.reveal-mask', {
-                clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
-                duration: 1.5,
-            }, "-=1.5")
-            .to('.hero-scroll', {
-                opacity: 1,
-                duration: 1.5
-            }, "-=1");
+            // Update DOM
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
 
-            // Hero scroll effect (subtle scale and fade out)
-            gsap.to('#hero .hw-accel', {
-                yPercent: 30,
-                opacity: 0,
-                scale: 0.95,
-                scrollTrigger: {
-                    trigger: "#hero",
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 1.2
-                }
-            });
-
-            // 3. Ambient Background Subtlety on Scroll
-            gsap.to('.orb-1', {
-                yPercent: 50,
-                xPercent: -20,
-                scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 2 }
-            });
-            gsap.to('.orb-2', {
-                yPercent: -50,
-                xPercent: 20,
-                scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 2.5 }
-            });
-
-            // 4. Reveal Animations (Fade Up)
-            gsap.utils.toArray('.fade-up').forEach(elem => {
-                gsap.fromTo(elem, 
-                    { opacity: 0, y: 40 },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1.2,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: elem,
-                            start: "top 85%", // Trigger slightly earlier for better UX
-                            toggleActions: "play none none reverse"
-                        }
-                    }
-                );
-            });
-
-            // Reveal Animations (Staggered Cards)
-            gsap.utils.toArray('.fade-up-stagger').forEach((elem, i) => {
-                gsap.fromTo(elem, 
-                    { opacity: 0, y: 60 },
-                    {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1.5,
-                        ease: "power3.out",
-                        scrollTrigger: {
-                            trigger: elem,
-                            start: "top 85%",
-                            toggleActions: "play none none reverse"
-                        }
-                    }
-                );
-            });
-
-            // 5. High-Performance Parallax Image
-            gsap.to('#parallax-wrapper', {
-                yPercent: 20, // Moves the container down slightly while scrolling past
-                ease: "none",
-                scrollTrigger: {
-                    trigger: "#parallax-wrapper",
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true
-                }
-            });
-
-            // 6. Countdown Logic
-            const targetDate = new Date("Dec 13, 2026 00:00:00").getTime();
-            
-            // Cache DOM elements
-            const elDays = document.getElementById("cd-days");
-            const elHours = document.getElementById("cd-hours");
-            const elMinutes = document.getElementById("cd-minutes");
-
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = targetDate - now;
-
-                if (distance < 0) {
-                    elDays.innerText = "00";
-                    elHours.innerText = "00";
-                    elMinutes.innerText = "00";
-                    return;
-                }
-
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-                elDays.innerText = days.toString().padStart(2, '0');
-                elHours.innerText = hours.toString().padStart(2, '0');
-                elMinutes.innerText = minutes.toString().padStart(2, '0');
-                
-                // Use requestAnimationFrame for updating without interval jitter
-                setTimeout(() => {
-                    requestAnimationFrame(updateCountdown);
-                }, 1000 * 60); // Update every minute to save CPU, since seconds are removed for elegance
+            // If countdown finished
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+                // Optionally show a message
             }
-            
-            // Initial call
-            updateCountdown();
+        }, 1000);
+
+        // --- 3. Particle System (Golden Fireflies/Dust) ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let w, h;
+
+        function resizeCanvas() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.size = Math.random() * 2.5 + 0.5; // size between 0.5 and 3
+                this.speedX = Math.random() * 0.5 - 0.25; // drift left/right
+                this.speedY = Math.random() * -0.5 - 0.1; // drift upwards
+                // Golden colors with varying opacities
+                this.opacity = Math.random() * 0.5 + 0.1; 
+                this.color = `rgba(212, 175, 55, ${this.opacity})`;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Wrap around edges
+                if (this.x > w) this.x = 0;
+                if (this.x < 0) this.x = w;
+                if (this.y < 0) {
+                    this.y = h;
+                    this.x = Math.random() * w;
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // Add a subtle glow effect to larger particles
+                if(this.size > 2) {
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = "rgba(212, 175, 55, 0.8)";
+                } else {
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            // Number of particles depends on screen width for performance
+            const particleCount = window.innerWidth < 768 ? 40 : 100;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, w, h);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Start animation loop
+        initParticles();
+        animateParticles();
+        
+        // Re-init particles if orientation changes significantly
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                resizeCanvas();
+                initParticles();
+            }, 200);
         });
     </script>
 </body>

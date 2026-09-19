@@ -1,1 +1,589 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Souvik & Reetu | An Ethereal Union</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Jost:wght@300;400;500&family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <!-- Scripts: GSAP + Plugins, Lenis, Tailwind -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.32/dist/lenis.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'display': ['"Cinzel"', 'serif'],
+                        'body': ['"Jost"', 'sans-serif'],
+                        'script': ['"Pinyon Script"', 'cursive'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'rgba(255, 255, 255, 0.1)',
+                            200: 'rgba(255, 255, 255, 0.2)',
+                            300: 'rgba(255, 255, 255, 0.3)',
+                            border: 'rgba(255, 255, 255, 0.4)',
+                        },
+                        accent: {
+                            rose: '#E8C5C5',
+                            gold: '#D4AF37',
+                            sage: '#C1C9B8',
+                        },
+                        text: {
+                            primary: '#1A202C',
+                            secondary: '#4A5568',
+                            light: '#A0AEC0'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { --bg-color: #FAFCFF; }
+        body {
+            background-color: var(--bg-color);
+            color: theme('colors.text.primary');
+            overflow-x: hidden;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+            /* Enhance hardware acceleration */
+            perspective: 1000px;
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        /* Liquid Canvas */
+        #ambient-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; pointer-events: none;
+            opacity: 0.85; filter: blur(90px);
+            transform: translateZ(0); 
+            will-change: transform;
+        }
+
+        /* Extreme Glass Utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(31, 38, 135, 0.1);
+        }
+
+        .glass-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.05), 0 20px 40px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        /* Preloader */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+        .loader-ring {
+            width: 150px; height: 150px;
+            border: 2px solid transparent;
+            border-top-color: theme('colors.accent.gold');
+            border-radius: 50%;
+            animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 12px; height: 12px;
+            border-radius: 50%; background-color: theme('colors.accent.gold');
+            pointer-events: none; z-index: 100000;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+            mix-blend-mode: difference;
+        }
+        #custom-cursor.hover {
+            width: 60px; height: 60px;
+            background-color: white; mix-blend-mode: exclusion;
+        }
+
+        .split-char { display: inline-block; opacity: 0; transform: translateY(100%) rotateX(-90deg); transform-origin: bottom center; }
+        
+        /* 3D Container */
+        .tilt-container { transform-style: preserve-3d; }
+        .tilt-element { transform: translateZ(50px); }
+        .tilt-element-deep { transform: translateZ(100px); }
+        
+        /* Horizontal Scroll specific */
+        .pin-wrap-sticky { height: 100vh; width: 100vw; position: sticky; top: 0; overflow: hidden; }
+        .pin-wrap { height: 100vh; width: max-content; display: flex; align-items: center; padding: 0 10vw; }
+        
+        a, button { cursor: none; }
+    </style>
+</head>
+
+<body class="font-body selection:bg-accent-rose selection:text-white cursor-none">
+
+    <div id="preloader">
+        <div class="relative flex items-center justify-center">
+            <div class="loader-ring absolute"></div>
+            <span class="font-script text-3xl text-accent-gold ml-2">S & R</span>
+        </div>
+        <div class="glass-curtain absolute inset-0 bg-white/50 backdrop-blur-3xl transform origin-top translate-y-full"></div>
+    </div>
+
+    <div id="custom-cursor"></div>
+    <canvas id="ambient-canvas"></canvas>
+
+    <main id="smooth-wrapper">
+        <div id="smooth-content">
+
+            <!-- SECTION 1: HERO (3D Tilt & Parallax Scrubbing) -->
+            <section id="hero" class="relative h-screen w-full flex items-center justify-center overflow-hidden tilt-container perspective-1000">
+                
+                <!-- Floating Glass Orbs for Extreme Parallax -->
+                <div class="glass-orb orb-1 w-32 h-32 md:w-64 md:h-64 left-[10%] top-[20%] -z-10 opacity-70"></div>
+                <div class="glass-orb orb-2 w-20 h-20 md:w-40 md:h-40 right-[15%] top-[10%] -z-10 opacity-50 blur-sm"></div>
+                <div class="glass-orb orb-3 w-48 h-48 md:w-96 md:h-96 right-[5%] bottom-[-10%] z-20 opacity-80 blur-[2px]"></div>
+                <div class="glass-orb orb-4 w-16 h-16 left-[20%] bottom-[15%] z-20 opacity-90"></div>
+
+                <div class="hero-content relative z-10 text-center px-4 w-full flex flex-col items-center">
+                    
+                    <p class="hero-pretext font-body tracking-[0.5em] uppercase text-xs md:text-sm text-text-secondary mb-6 tilt-element opacity-0">
+                        The Wedding Celebration of
+                    </p>
+
+                    <div class="relative w-full flex justify-center items-center tilt-element-deep">
+                        <h1 class="font-display text-7xl md:text-[10vw] leading-none text-text-primary flex items-center justify-center flex-wrap gap-x-4 md:gap-x-12">
+                            <span class="hero-name split-text" data-text="Souvik">Souvik</span>
+                            <span class="hero-amp font-script text-accent-rose text-6xl md:text-9xl font-normal opacity-0 scale-0 origin-center">&amp;</span>
+                            <span class="hero-name split-text" data-text="Reetu">Reetu</span>
+                        </h1>
+                    </div>
+                    
+                    <div class="glass-panel px-10 py-5 rounded-full mt-12 opacity-0 hero-date tilt-element">
+                        <p class="font-body tracking-widest text-sm md:text-lg text-text-primary font-medium">
+                            DEC 13 &mdash; 2026
+                        </p>
+                    </div>
+
+                    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center opacity-0 hero-scroll">
+                        <div class="w-[1px] h-24 bg-gradient-to-b from-text-secondary/50 to-transparent overflow-hidden">
+                            <div class="w-full h-1/2 bg-accent-gold animate-[scroll-down_1.5s_cubic-bezier(0.77,0,0.175,1)_infinite]"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- INTERSTITIAL: Kinetic Scroll Text -->
+            <section class="h-screen w-full flex items-center justify-center overflow-hidden bg-transparent pointer-events-none relative z-20">
+                <h2 id="kinetic-text" class="font-display text-[15vw] leading-none text-black/5 whitespace-nowrap text-center">
+                    ETHEREAL UNION
+                </h2>
+            </section>
+
+            <!-- SECTION 2: THE INVITATION (Z-Axis Zoom) -->
+            <section id="invitation" class="relative min-h-[100vh] bg-transparent z-30">
+                <div class="invite-pin-container sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+                    
+                    <!-- Expanding Glass Ring -->
+                    <div class="expand-ring absolute w-[10vw] h-[10vw] rounded-full border border-accent-gold/30 opacity-0 pointer-events-none"></div>
+
+                    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto flex flex-col items-center">
+                        <div class="glass-panel p-10 md:p-24 rounded-[3rem] md:rounded-[5rem] invite-card transform-gpu">
+                            <h2 class="font-script text-5xl md:text-7xl text-accent-rose mb-8 invite-text">A New Chapter</h2>
+                            <p class="font-display text-2xl md:text-4xl text-text-primary leading-snug invite-text">
+                                As we step into a new journey together, <br class="hidden md:block"/>
+                                your presence will be our greatest blessing.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: EVENTS (Extreme Horizontal Scroll) -->
+            <section id="events-section" class="relative z-40 bg-white/20 backdrop-blur-sm">
+                <div class="pin-wrap-sticky">
+                    <div class="pin-wrap">
+                        
+                        <!-- Intro card for Horizontal scroll -->
+                        <div class="w-screen max-w-[400px] md:max-w-[600px] flex-shrink-0 pr-10 md:pr-32">
+                            <h2 class="font-display text-5xl md:text-7xl text-text-primary leading-tight">The <br><span class="font-script text-accent-rose">Celebrations</span></h2>
+                            <p class="font-body text-lg mt-6 text-text-secondary tracking-wide">Scroll to explore the itinerary.</p>
+                            <div class="w-16 h-[1px] bg-black mt-8"></div>
+                        </div>
+
+                        <!-- Event 1 -->
+                        <div class="w-[85vw] md:w-[60vw] max-w-[800px] flex-shrink-0 pr-8 md:pr-16">
+                            <div class="event-card-horiz glass-panel rounded-3xl p-10 md:p-16 h-full flex flex-col justify-center relative overflow-hidden group transform-gpu">
+                                <div class="absolute top-0 right-0 w-64 h-64 bg-accent-rose/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                
+                                <p class="font-body text-accent-rose tracking-[0.3em] text-sm font-semibold mb-4">SUNDAY</p>
+                                <h3 class="font-display text-5xl md:text-6xl text-text-primary mb-8">The Marriage</h3>
+                                
+                                <div class="flex items-center mb-12">
+                                    <div class="border-l-2 border-accent-gold pl-6">
+                                        <span class="block font-display text-5xl md:text-6xl text-text-primary leading-none">13</span>
+                                        <span class="block font-body text-sm tracking-[0.2em] text-text-secondary mt-2">DECEMBER</span>
+                                    </div>
+                                    <div class="ml-12 border-l-2 border-black/10 pl-6">
+                                        <p class="font-body text-xl md:text-2xl text-text-secondary">7:00 PM Onwards</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start text-text-secondary border-t border-black/10 pt-8 mt-auto">
+                                    <svg class="w-6 h-6 mr-4 mt-1 text-accent-rose flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                    <p class="font-body text-lg md:text-xl leading-relaxed">
+                                        Krishna Kunja,<br>Canning-Herobhanga Rd, Dighirpar,<br>Canning, West Bengal 743329
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event 2 -->
+                        <div class="w-[85vw] md:w-[60vw] max-w-[800px] flex-shrink-0">
+                            <div class="event-card-horiz glass-panel rounded-3xl p-10 md:p-16 h-full flex flex-col justify-center relative overflow-hidden group transform-gpu">
+                                <div class="absolute top-0 right-0 w-64 h-64 bg-accent-sage/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                
+                                <p class="font-body text-accent-sage tracking-[0.3em] text-sm font-semibold mb-4">TUESDAY</p>
+                                <h3 class="font-display text-5xl md:text-6xl text-text-primary mb-8">The Reception</h3>
+                                
+                                <div class="flex items-center mb-12">
+                                    <div class="border-l-2 border-accent-gold pl-6">
+                                        <span class="block font-display text-5xl md:text-6xl text-text-primary leading-none">15</span>
+                                        <span class="block font-body text-sm tracking-[0.2em] text-text-secondary mt-2">DECEMBER</span>
+                                    </div>
+                                    <div class="ml-12 border-l-2 border-black/10 pl-6">
+                                        <p class="font-body text-xl md:text-2xl text-text-secondary">8:00 PM Onwards</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start text-text-secondary border-t border-black/10 pt-8 mt-auto">
+                                    <svg class="w-6 h-6 mr-4 mt-1 text-accent-sage flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                    <p class="font-body text-lg md:text-xl leading-relaxed">
+                                        Krishna Kunja,<br>Canning-Herobhanga Rd, Dighirpar,<br>Canning, West Bengal 743329
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: MAP & LOCATION -->
+            <section id="location" class="relative py-32 min-h-screen flex flex-col justify-center items-center overflow-hidden z-20">
+                
+                <!-- Dynamic background gradient ring for map area -->
+                <div class="absolute w-[800px] h-[800px] rounded-full border-[1px] border-accent-gold/20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 location-ring"></div>
+                <div class="absolute w-[1200px] h-[1200px] rounded-full border-[1px] border-accent-rose/10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 location-ring-2"></div>
+
+                <div class="container mx-auto px-4 max-w-4xl text-center relative z-10">
+                    <div class="glass-panel p-12 md:p-24 rounded-[3rem] shadow-2xl relative overflow-hidden group location-container transform-gpu">
+                        
+                        <div class="absolute -inset-1 bg-gradient-to-r from-accent-rose via-white to-accent-sage opacity-30 blur-2xl group-hover:opacity-60 transition-opacity duration-1000 rounded-[3rem]"></div>
+                        
+                        <h2 class="font-display text-5xl md:text-7xl text-text-primary mb-6 relative z-10">Join Us</h2>
+                        <p class="font-body text-xl text-text-secondary mb-12 max-w-lg mx-auto relative z-10">
+                            We cannot wait to celebrate this beautiful milestone with you at Krishna Kunja.
+                        </p>
+                        
+                        <a href="https://www.google.com/maps/search/?api=1&query=Krishna+Kunja,+Canning-+Herobhanga+Rd,+Dighirpar,+Canning,+West+Bengal+743329" 
+                           target="_blank" rel="noopener noreferrer"
+                           class="interactive-element inline-flex items-center justify-center px-10 py-5 rounded-full bg-text-primary text-white font-body tracking-[0.2em] uppercase text-sm hover:scale-105 transition-transform duration-500 relative z-10 overflow-hidden group/btn shadow-[0_10px_30px_rgba(0,0,0,0.2)]">
+                            <span class="relative z-10 flex items-center">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                Open in Google Maps
+                            </span>
+                            <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-accent-gold to-accent-rose transform scale-x-0 group-hover/btn:scale-x-100 transition-transform origin-left duration-700 ease-out z-0"></div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FOOTER -->
+            <footer class="relative py-24 text-center overflow-hidden z-20">
+                <div class="mx-4 md:mx-12 rounded-[2rem] py-16 px-4">
+                    <p class="font-script text-4xl md:text-6xl text-accent-rose mb-6 footer-el">With Love,</p>
+                    <h2 class="font-display text-5xl md:text-8xl text-text-primary footer-el">Souvik & Reetu</h2>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- Utility: Text Splitter for Character Animation ---
+        document.querySelectorAll('.split-text').forEach(el => {
+            const text = el.getAttribute('data-text');
+            el.innerHTML = text.split('').map(char => 
+                `<span class="split-char">${char === ' ' ? '&nbsp;' : char}</span>`
+            ).join('');
+        });
+
+        // --- Custom Cursor ---
+        const cursor = document.getElementById('custom-cursor');
+        const interactiveElements = document.querySelectorAll('a, button, .interactive-element');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            gsap.to(cursor, { x: mouseX, y: mouseY, duration: 0.15, ease: "power2.out" });
+        });
+
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // --- Lenis Smooth Scrolling ---
+        const lenis = new Lenis({
+            duration: 1.5,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            smoothTouch: false, // Prevent issues on mobile touch
+        });
+
+        let scrollVelocity = 0;
+        lenis.on('scroll', (e) => {
+            scrollVelocity = e.velocity;
+            ScrollTrigger.update();
+        });
+
+        gsap.ticker.add((time)=>{ lenis.raf(time * 1000); });
+        gsap.ticker.lagSmoothing(0);
+
+        // --- Velocity-Reactive Liquid Canvas Background ---
+        const canvas = document.getElementById('ambient-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let blobs = [];
+
+        function initCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            blobs = [
+                { x: width * 0.2, y: height * 0.2, r: width * 0.5, color: '#FFE6E6', baseVx: 0.5, baseVy: 0.7, vx: 0.5, vy: 0.7 },
+                { x: width * 0.8, y: height * 0.3, r: width * 0.6, color: '#F0F5E6', baseVx: -0.6, baseVy: 0.4, vx: -0.6, vy: 0.4 },
+                { x: width * 0.5, y: height * 0.8, r: width * 0.5, color: '#FDF7E5', baseVx: 0.4, baseVy: -0.6, vx: 0.4, vy: -0.6 }
+            ];
+        }
+
+        function drawAmbient() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Extreme animation touch: Blobs speed up based on scroll velocity
+            const velocityMultiplier = 1 + Math.abs(scrollVelocity) * 0.1;
+
+            blobs.forEach(blob => {
+                // Apply scroll velocity to movement
+                blob.vx = blob.baseVx * velocityMultiplier;
+                blob.vy = blob.baseVy * velocityMultiplier;
+
+                blob.x += blob.vx;
+                blob.y += blob.vy;
+
+                if (blob.x < -blob.r || blob.x > width + blob.r) blob.baseVx *= -1;
+                if (blob.y < -blob.r || blob.y > height + blob.r) blob.baseVy *= -1;
+
+                const gradient = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, blob.r * (1 + Math.abs(scrollVelocity)*0.02));
+                gradient.addColorStop(0, blob.color);
+                gradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(blob.x, blob.y, blob.r * 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(drawAmbient);
+        }
+
+        window.addEventListener('resize', initCanvas);
+        initCanvas();
+        drawAmbient();
+
+        // --- STREAMING_CHUNK:Building GSAP Timelines for Extreme Animation ---
+
+        // 1. Preloader & Hero Reveal Sequence
+        window.addEventListener('load', () => {
+            const tl = gsap.timeline();
+            
+            // Hide preloader spinner
+            tl.to('.loader-ring, #preloader span', { opacity: 0, duration: 0.5, ease: "power2.inOut" })
+              // Drop the glass curtain
+              .to('.glass-curtain', { y: "0%", duration: 1.2, ease: "expo.inOut" })
+              .set('#preloader', { display: "none" })
+              // Reveal Hero Elements
+              .to('.hero-pretext', { opacity: 1, duration: 1, ease: "power2.out" }, "-=0.5")
+              // Staggered Character Reveal for Names
+              .to('.hero-name .split-char', { 
+                  y: "0%", opacity: 1, rotateX: "0deg", 
+                  duration: 1.2, stagger: 0.05, ease: "back.out(1.7)" 
+              }, "-=0.8")
+              .to('.hero-amp', { opacity: 1, scale: 1, duration: 1, ease: "elastic.out(1, 0.5)" }, "-=0.8")
+              .to('.hero-date', { opacity: 1, z: 0, duration: 1, ease: "power3.out" }, "-=0.6")
+              .to('.hero-scroll', { opacity: 1, duration: 1 }, "-=0.4");
+        });
+
+        // 2. 3D Mouse Tracking on Hero
+        const tiltContainer = document.querySelector('.tilt-container');
+        const tiltElements = document.querySelectorAll('.tilt-element, .tilt-element-deep');
+        
+        tiltContainer.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+            
+            gsap.to(tiltElements, {
+                rotationY: xAxis,
+                rotationX: yAxis,
+                duration: 1,
+                ease: "power2.out",
+                transformPerspective: 1000
+            });
+        });
+        tiltContainer.addEventListener('mouseleave', () => {
+            gsap.to(tiltElements, { rotationY: 0, rotationX: 0, duration: 1, ease: "power2.out" });
+        });
+
+        // 3. Hero Parallax Scroll Scrubbing (Extreme Animation)
+        gsap.to('.orb-1', { y: -300, x: 100, rotation: 45, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1 }});
+        gsap.to('.orb-2', { y: -150, x: -50, rotation: -45, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 1.5 }});
+        gsap.to('.orb-3', { y: -400, scale: 1.2, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: 0.5 }});
+        gsap.to('.hero-content', { y: 200, opacity: 0, scale: 0.9, scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom top", scrub: true }});
+
+        // 4. Kinetic Typography Scrub
+        gsap.fromTo('#kinetic-text', 
+            { scale: 0.5, y: 100 },
+            { 
+                scale: 5, y: -200, opacity: 0,
+                scrollTrigger: {
+                    trigger: "#kinetic-text",
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1
+                }
+            }
+        );
+
+        // 5. Pinned Z-Axis Invitation Card
+        const inviteTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "#invitation",
+                start: "center center",
+                end: "+=150%", // Pin for 150% of viewport height
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1
+            }
+        });
+
+        // Card flies in from depth, ring expands out
+        inviteTl.from('.invite-card', { scale: 0.5, opacity: 0, rotationX: 45, transformPerspective: 1000, duration: 2 })
+                .to('.expand-ring', { opacity: 1, scale: 15, borderWidth: "1px", duration: 3 }, "<")
+                .from('.invite-text', { y: 50, opacity: 0, stagger: 0.5, duration: 2 }, "-=1")
+                // fade out as user leaves pin
+                .to('.invite-card', { scale: 1.1, opacity: 0, duration: 2 }, "+=1");
+
+        // 6. Horizontal Scroll for Events (The "Apple" Effect)
+        // Only run horizontal scroll logic if screen is wide enough, else it breaks layout.
+        // Tailwind breakpoints: md is 768px.
+        let mm = gsap.matchMedia();
+
+        mm.add("(min-width: 768px)", () => {
+            const horizontalScrollWrapper = document.querySelector('.pin-wrap');
+            
+            // Calculate total width to scroll
+            function getScrollAmount() {
+                let wrapperWidth = horizontalScrollWrapper.scrollWidth;
+                return -(wrapperWidth - window.innerWidth);
+            }
+
+            const tween = gsap.to(horizontalScrollWrapper, {
+                x: getScrollAmount,
+                ease: "none"
+            });
+
+            ScrollTrigger.create({
+                trigger: "#events-section",
+                start: "top top",
+                end: () => `+=${getScrollAmount() * -1}`,
+                pin: true,
+                animation: tween,
+                scrub: 1,
+                invalidateOnRefresh: true
+            });
+
+            // Parallax inside the horizontal cards
+            gsap.utils.toArray('.event-card-horiz').forEach(card => {
+                gsap.from(card.querySelectorAll('h3, p, div'), {
+                    x: 50,
+                    opacity: 0.5,
+                    stagger: 0.1,
+                    scrollTrigger: {
+                        trigger: card,
+                        containerAnimation: tween,
+                        start: "left center",
+                        scrub: true
+                    }
+                });
+            });
+        });
+
+        // 7. Location Rings and Reveal
+        gsap.from('.location-ring', {
+            scale: 0, opacity: 0, rotation: 180,
+            scrollTrigger: {
+                trigger: "#location", start: "top center", end: "center center", scrub: 1
+            }
+        });
+        gsap.from('.location-ring-2', {
+            scale: 0, opacity: 0, rotation: -180,
+            scrollTrigger: {
+                trigger: "#location", start: "top bottom", end: "center center", scrub: 1.5
+            }
+        });
+        gsap.from('.location-container', {
+            y: 100, opacity: 0, rotationX: -20, transformPerspective: 1000,
+            scrollTrigger: {
+                trigger: "#location", start: "top 70%", end: "center center", scrub: 1
+            }
+        });
+
+        // 8. Footer subtle parallax
+        gsap.from('.footer-el', {
+            y: 50, opacity: 0, stagger: 0.2,
+            scrollTrigger: {
+                trigger: "footer", start: "top bottom", end: "bottom bottom", scrub: true
+            }
+        });
+
+    </script>
+
+    <style>
+        /* CSS Keyframe additions */
+        @keyframes scroll-down {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(200%); opacity: 0; }
+        }
+    </style>
+</body>
+</html>
